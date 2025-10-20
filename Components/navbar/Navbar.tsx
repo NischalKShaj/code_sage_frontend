@@ -4,7 +4,7 @@
 // importing the required modules
 import Link from "next/link";
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   SunIcon,
   MoonIcon,
@@ -16,6 +16,7 @@ import Image from "next/image";
 const Navbar = () => {
   const [toggleTheme, setToggleTheme] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
   const pathname = usePathname();
 
   const links = [
@@ -25,6 +26,12 @@ const Navbar = () => {
   ];
 
   const normalize = (path: string) => path.replace(/\/$/, "");
+
+  // function for moving to the login page
+  const handleLogin = () => {
+    console.log("here");
+    router.push("/login");
+  };
 
   return (
     <div className="bg-blue-50 relative flex justify-between items-center px-8 py-4 space-x-2">
@@ -65,7 +72,10 @@ const Navbar = () => {
         })}
       </div>
       <div className="hidden md:flex space-x-2 items-center">
-        <button className=" rounded-lg cursor-pointer px-4 py-2 bg-blue-300 hover:bg-blue-200 text-white hover:text-gray-900">
+        <button
+          onClick={() => handleLogin()}
+          className=" rounded-lg cursor-pointer px-4 py-2 bg-blue-400 hover:bg-blue-500 text-white hover:text-white"
+        >
           login
         </button>
         <button
@@ -128,7 +138,10 @@ const Navbar = () => {
               <MoonIcon className="w-6 h-6 text-yellow-300" />
             )}
           </button>
-          <button className="rounded-lg cursor-pointer px-4 py-2 bg-blue-300 hover:bg-blue-200 text-white hover:text-gray-900">
+          <button
+            onClick={() => handleLogin()}
+            className="rounded-lg cursor-pointer px-4 py-2 bg-blue-400 hover:bg-blue-500 text-white hover:text-white"
+          >
             Login
           </button>
         </div>
