@@ -3,11 +3,48 @@
 
 // importing the required modules
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { FaGoogle, FaMicrosoft, FaApple, FaGithub } from "react-icons/fa";
+import { UserLogin } from "@/types/types";
+import api from "@/app/api/interceptor";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const [formData, setFormData] = useState<UserLogin>({
+    email: "",
+    password: "",
+  });
+
+  const router = useRouter();
+
+  // for changing the values in the input field
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // for submitting the value to the form
+  const handleSubmit = async () => {
+    try {
+      console.log("clicked", formData);
+      const loginPromise = api.post("/login", formData);
+
+      toast.promise(loginPromise, {
+        loading: "Logging into account...",
+        success: "Login completed 🎉",
+        error: (err) =>
+          err?.response?.data?.message || "Login failed — Please try again ❌",
+      });
+
+      const resposne = await loginPromise;
+      router.push("/");
+    } catch (error) {
+      console.error("error from the response", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-blue-50 flex items-center justify-center px-4">
       {/* Login Card */}
@@ -36,12 +73,16 @@ const Login = () => {
           <input
             type="email"
             placeholder="Enter your email"
+            name="email"
+            onChange={handleFormChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required
           />
           <input
             type="password"
             placeholder="Enter your password"
+            name="password"
+            onChange={handleFormChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required
           />
@@ -49,7 +90,10 @@ const Login = () => {
 
         {/* Buttons */}
         <div className="flex flex-col space-y-3 w-full">
-          <button className="w-full cursor-pointer bg-blue-400 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition">
+          <button
+            onClick={handleSubmit}
+            className="w-full cursor-pointer bg-blue-400 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition"
+          >
             Login
           </button>
           <Link href="/signup">

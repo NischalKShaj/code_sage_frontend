@@ -3,11 +3,51 @@
 
 // importing the required modules
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { FaGoogle, FaMicrosoft, FaApple, FaGithub } from "react-icons/fa";
+import { UserSignup } from "@/types/types";
+import api from "@/app/api/interceptor";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
+  const [formData, setFormData] = useState<UserSignup>({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const router = useRouter();
+
+  // for handling the changing value
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // for submitting the form data
+  const handleSubmit = async () => {
+    if (!formData.username || !formData.email || !formData.password) {
+      toast.error("Please fill all the fields ⚠️");
+      return;
+    }
+    try {
+      const signupPromise = api.post("/signup", formData);
+      toast.promise(signupPromise, {
+        loading: "Creating your account...",
+        success: "Account created successfully 🎉",
+        error: (err) =>
+          err?.response?.data?.message || "Signup failed — Please try again ❌",
+      });
+
+      const response = await signupPromise;
+
+      router.push("/login");
+    } catch (error) {
+      console.error("error from data response");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-blue-50 flex items-center justify-center px-4 py-8 overflow-auto">
       {/* Login Card */}
@@ -35,18 +75,27 @@ const Signup = () => {
         <div className="flex flex-col space-y-4 w-full">
           <input
             type="text"
+            name="username"
             placeholder="Enter your username"
+            value={formData.username}
+            onChange={handleChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required
           />
           <input
             type="email"
+            name="email"
             placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required
           />
           <input
             type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Enter your password"
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
             required
@@ -55,7 +104,10 @@ const Signup = () => {
 
         {/* Buttons */}
         <div className="flex flex-col space-y-3 w-full">
-          <button className="w-full cursor-pointer bg-blue-400 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition">
+          <button
+            onClick={handleSubmit}
+            className="w-full cursor-pointer bg-blue-400 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition"
+          >
             Signup
           </button>
 
