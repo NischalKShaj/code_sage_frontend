@@ -2,210 +2,244 @@
 "use client";
 
 // importing the required modules
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image"; // Import for Next.js image optimization
+import React, { useState, useEffect } from "react";
+import Editor from "@monaco-editor/react";
 import { FeatureSlide } from "../../types/types";
 
-// 1. TypeScript Interface for type safety
-
-const FeatureCarousel: React.FC = () => {
-  // Define feature slides with placeholders for images
+const FeatureCarousel = () => {
   const featureSlides: FeatureSlide[] = [
     {
-      image: "/images/error-detection.png", // Use actual paths
       title: "Error Detection",
       description:
         "Automatically detect syntax, logic, and best-practice issues across your codebase. Save hours of debugging and focus on building.",
+      language: "javascript",
+      code: `
+function calculateTotal(price, quantity) {
+  price * quanttiy;
+}
+
+const total = calculateTotal(10, 5);
+console.log('Total:', total); // Output: undefined
+      `,
+      terminalOutput: `
+$ node main.js
+/path/to/main.js:3
+  price * quanttiy;
+          ^
+ReferenceError: quanttiy is not defined
+    at calculateTotal (/<path>/main.js:3:11)
+    at Object.<anonymous> (/<path>/main.js:6:13)
+    at Module._compile (node:internal/modules/cjs/loader:1254:14)
+`,
     },
     {
-      image: "/images/optimization-insights.png",
       title: "Optimization Insights",
       description:
         "Get AI-powered suggestions to improve performance, readability, and scalability. Your code, rewritten smarter and cleaner.",
+      language: "typescript",
+      code: `// Original Code: Inefficient object restructuring
+const userList = [{ id: 1, data: 'A' }, { id: 2, data: 'B' }];
+const findUser = (id) => {
+  for (let i = 0; i < userList.length; i++) {
+    if (userList[i].id === id) {
+      return userList[i].data;
+    }
+  }
+  return 'User not found';
+};`,
+      optimizedCode: `// Optimized Code: Use Map for O(1) lookup
+const userMap = new Map(
+  userList.map(user => [user.id, user.data])
+);
+
+const findUser = (id: number): string => {
+  return userMap.get(id) || 'User not found';
+};`,
     },
     {
-      image: "/images/code-quality-report.png",
       title: "Code Quality Report",
       description:
         "Evaluate your project’s code quality with a clear score and detailed analysis — from maintainability to security.",
+      language: "python",
+      code: `
+class UserProcessor:
+    def process_data(self, users):
+        if not users: return 0
+        total = 0
+        for user in users:
+            try:
+                # Issue: Long function, deep nesting
+                if user['active']:
+                    score = user.get('score', 10)
+                    if score > 50:
+                        total += score * 2
+                    else:
+                        total += score
+            except Exception as e:
+                # Weak error handling: Bare except
+                print(f"Error processing: {e}")
+        return total
+`,
+      codeQualityScore: 78,
     },
   ];
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  // Use 'Active' for the state that enables scroll hijacking
-  const [isScrollSnappingActive, setIsScrollSnappingActive] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const MAX_SLIDES = featureSlides.length;
 
-  // Debouncing the scroll handler is a good practice to prevent excessive state updates.
-  // For a critical wheel handler, using useCallback and a simple time check is often better
-  // than complex debounce libraries to ensure immediate response, but we'll use a direct
-  // implementation here and rely on `event.preventDefault()` for the smooth snapping.
-
-  // --- Scroll Event Handler (using useCallback) ---
-  const handleScroll = useCallback(
-    (event: WheelEvent) => {
-      // Only proceed if the section is controlling the scroll
-      if (!isScrollSnappingActive) return;
-
-      // Prevent default scroll behavior initially for all slides in the range
-      event.preventDefault();
-
-      // Determine scroll direction (deltaY > 0 is scrolling down)
-      const direction = event.deltaY > 0 ? 1 : -1;
-      const nextSlide = currentSlide + direction;
-
-      // Logic to change slide
-      if (
-        nextSlide >= 0 &&
-        nextSlide < MAX_SLIDES &&
-        Math.abs(event.deltaY) > 5 // Require a minimum scroll movement to trigger a slide change
-      ) {
-        // Change slide and prevent browser scroll
-        setCurrentSlide(nextSlide);
-      } else if (
-        (direction === 1 && currentSlide === MAX_SLIDES - 1) || // Allow exit scroll down from last slide
-        (direction === -1 && currentSlide === 0) // Allow exit scroll up from first slide
-      ) {
-        // If we are at an edge, we *allow* the browser's default scroll
-        // (by not calling preventDefault on the scroll events outside this handler)
-        // However, since we called preventDefault() above, we must rely on the
-        // Intersection Observer logic below to disengage scroll snapping.
-
-        // To properly allow exit, the `isScrollSnappingActive` must be set to false.
-        // We'll let the Intersection Observer handle the disengagement naturally.
-        // For a seamless exit, we must NOT prevent default here.
-        // For simplicity, we just return and rely on the next scroll event after
-        // the section is out of the viewport.
-        return;
-      }
-    },
-    [currentSlide, isScrollSnappingActive, MAX_SLIDES]
-  );
-
-  // --- Intersection Observer Setup (To Detect When Section is Visible and Handle Reset) ---
+  // Auto change every 4s
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const isIntersecting = entry.isIntersecting;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % featureSlides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [featureSlides.length]);
 
-        // A key piece of logic: if the user scrolls past the last slide, the observer
-        // will show it's NOT intersecting. When it becomes intersecting again:
-        if (isIntersecting) {
-          setIsScrollSnappingActive(true);
-
-          // 3. Reset to first slide (when scrolling down *into* the section)
-          // Check if the top of the element is visible (i.e., we are scrolling down)
-          const rect = entry.boundingClientRect;
-
-          // If we came from the section ABOVE (rect.y > 0) AND we are not on the first slide, reset.
-          if (rect.y >= 0 && currentSlide !== 0) {
-            // Note: This check isn't perfectly reliable on all browsers/scrolls,
-            // but it's the best pure-JS approach for "resetting on scroll back up/into the section".
-            setCurrentSlide(0);
-          }
-        } else {
-          // Allow normal page scroll when section is out of view
-          setIsScrollSnappingActive(false);
-        }
-      },
-      {
-        threshold: 0.8, // Require 80% of the component to be visible for the effect to activate
-        rootMargin: "0px 0px 0px 0px",
-      }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, [currentSlide]); // currentSlide as dependency helps in resetting the slide
-
-  // --- Attach/Detach Wheel Listener ---
-  useEffect(() => {
-    const ref = sectionRef.current;
-    if (ref) {
-      // We attach the listener only once, and the handler uses `isScrollSnappingActive`
-      // to decide if it should call preventDefault().
-      ref.addEventListener("wheel", handleScroll, { passive: false });
-    }
-    return () => {
-      if (ref) {
-        ref.removeEventListener("wheel", handleScroll);
-      }
-    };
-  }, [handleScroll]); // `handleScroll` is wrapped in `useCallback` and is stable
-
-  return (
-    <div
-      ref={sectionRef}
-      // Give the container a defined height relative to the viewport
-      className="h-[100vh] flex flex-col justify-center items-center overflow-hidden snap-start"
-    >
-      <div className="max-w-4xl mx-auto p-8 bg-white shadow-2xl rounded-2xl border border-blue-200">
-        {/* --- Image and Content --- */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-          {/* Image Placeholder (Best Practice: Use Next/Image for performance) */}
-          <div className="w-full md:w-1/2 flex justify-center items-center h-64 md:h-auto">
-            {/* If you were using Next.js Image component: */}
-            {/* <Image
-              src={featureSlides[currentSlide].image!}
-              alt={featureSlides[currentSlide].title}
-              width={400} // Placeholder values
-              height={300} // Placeholder values
-              className="rounded-xl shadow-lg border border-gray-100"
-            /> */}
-
-            {/* Simple <img> as the image path is commented out in your original code */}
-            <div className="w-full h-full bg-blue-100 flex items-center justify-center rounded-xl shadow-lg border border-gray-200">
-              <span className="text-blue-500 font-bold text-xl">
-                {featureSlides[currentSlide].title} Image Placeholder
-              </span>
+  // --- Render Visuals (same as before, condensed) ---
+  const renderCodeVisuals = (feature: FeatureSlide) => {
+    switch (feature.title) {
+      case "Error Detection":
+        return (
+          <div className="flex flex-col h-full gap-4">
+            <div className="flex-1 border border-red-500 rounded-lg overflow-hidden">
+              <Editor
+                height="100%"
+                language={feature.language}
+                value={feature.code}
+                theme="vs-dark"
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
+            <div className="h-[40%] bg-gray-900 p-3 text-sm text-red-400 font-mono rounded-lg overflow-auto border border-red-700">
+              <span className="text-green-500">$</span> node main.js
+              <pre className="whitespace-pre-wrap">
+                {feature.terminalOutput}
+              </pre>
             </div>
           </div>
+        );
 
-          {/* Content (Changes based on currentSlide) */}
-          <div className="w-full md:w-1/2 text-left">
-            <p className="text-sm font-semibold text-blue-500 uppercase mb-2">
-              Feature {currentSlide + 1} of {MAX_SLIDES}
-            </p>
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              {featureSlides[currentSlide].title}
-            </h3>
-            <p className="text-gray-600 text-lg">
-              {featureSlides[currentSlide].description}
-            </p>
+      case "Optimization Insights":
+        return (
+          <div className="grid grid-rows-2 gap-4 h-full">
+            <div className="flex flex-col border border-yellow-500 rounded-lg overflow-hidden">
+              <div className="p-2 bg-yellow-600 text-white text-xs font-semibold">
+                Original (O(N))
+              </div>
+              <Editor
+                height="100%"
+                language={feature.language}
+                value={feature.code}
+                theme="vs-dark"
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
+            <div className="flex flex-col border border-green-500 rounded-lg overflow-hidden">
+              <div className="p-2 bg-green-600 text-white text-xs font-semibold">
+                Optimized (O(1))
+              </div>
+              <Editor
+                height="100%"
+                language={feature.language}
+                value={feature.optimizedCode}
+                theme="vs-dark"
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                }}
+              />
+            </div>
           </div>
-        </div>
+        );
 
-        {/* --- Navigation Dots (Visual Indicator) --- */}
-        <div className="flex justify-center mt-10 space-x-2">
-          {featureSlides.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer ${
-                index === currentSlide ? "bg-blue-600 w-6" : "bg-gray-300"
-              }`}
-              onClick={() => setCurrentSlide(index)} // Allow clicking dots
+      case "Code Quality Report":
+        const score = feature.codeQualityScore || 0;
+        const color =
+          score > 90
+            ? "text-green-500"
+            : score > 70
+            ? "text-yellow-500"
+            : "text-red-500";
+        return (
+          <div className="flex flex-col h-full gap-4">
+            <div className="flex justify-center items-center py-2">
+              <span className={`text-5xl font-extrabold ${color}`}>
+                {score}/100
+              </span>
+            </div>
+            <Editor
+              height="100%"
+              language={feature.language}
+              value={feature.code}
+              theme="vs-dark"
+              options={{
+                readOnly: true,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+              }}
             />
-          ))}
-        </div>
-      </div>
+          </div>
+        );
 
-      {/* Instruction for user */}
-      <p className="mt-8 text-gray-500 font-medium">
-        {currentSlide < MAX_SLIDES - 1
-          ? "⬇️ Scroll down to view the next feature."
-          : "✅ All features reviewed. Scroll down to proceed."}
-      </p>
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden">
+      {featureSlides.map((feature, index) => {
+        const isActive = index === currentSlide;
+        const nextIndex = (currentSlide + 1) % featureSlides.length;
+        const isNext = index === nextIndex;
+
+        return (
+          <div
+            key={index}
+            className={`absolute transition-all duration-700 ease-in-out w-[80vw] max-w-6xl h-[75vh] p-8 grid md:grid-cols-2 gap-8 rounded-2xl
+        ${
+          isActive
+            ? "z-30 opacity-100"
+            : isNext
+            ? "z-20 opacity-90"
+            : "z-10 opacity-0 pointer-events-none"
+        }
+      `}
+            style={{
+              transform: isActive
+                ? "translateY(0px) scale(1)"
+                : isNext
+                ? "translateY(-30px) scale(0.95)" // slightly above & smaller
+                : "translateY(100px) scale(0.9)", // hidden slides go down
+              filter: isNext ? "brightness(0.85) blur(0.5px)" : "none",
+              transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+              boxShadow: isActive
+                ? "0px 20px 60px rgba(0,0,0,0.25)"
+                : "0px 10px 40px rgba(0,0,0,0.15)",
+              background: "linear-gradient(to bottom right, #f9fafb, #ffffff)",
+            }}
+          >
+            {/* Left: Visual */}
+            <div className="w-full h-full">{renderCodeVisuals(feature)}</div>
+
+            {/* Right: Text */}
+            <div className="flex flex-col justify-center text-black">
+              <h3 className="text-4xl font-extrabold mb-4">{feature.title}</h3>
+              <p className="text-lg opacity-80">{feature.description}</p>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-// Use standard React/Next.js export
 export default FeatureCarousel;

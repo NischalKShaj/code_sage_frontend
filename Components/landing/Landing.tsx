@@ -41,8 +41,8 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-6xl mx-auto text-center mb-12">
+      <section className="py-16 px-6 bg-gray-50">
+        <div className="max-w-6xl mx-auto text-center mb-3">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
             What Code Reviewer Does
           </h2>
@@ -55,24 +55,24 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-500 text-white text-center">
+      <section className="py-20 bg-blue-100 text-black text-center">
         <h2 className="text-3xl sm:text-4xl font-bold">
           Ready to Level Up Your Code?
         </h2>
-        <p className="text-blue-100 mt-3 text-lg">
+        <p className="text-black mt-3 text-lg">
           Sign up now and experience the future of AI-assisted code reviews.
         </p>
         <Link
           href="/signup"
-          className="inline-block mt-6 px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-blue-100 transition"
+          className="inline-block mt-6 px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-blue-200 transition"
         >
           Get Started
         </Link>
       </section>
 
       {/* Footer */}
-      <footer className="text-center py-6 text-gray-500 text-sm border-t">
-        © {new Date().getFullYear()} Code Reviewer — All rights reserved.
+      <footer className="text-center py-6 text-gray-500 text-sm ">
+        © {new Date().getFullYear()} Code Sage — All rights reserved.
       </footer>
     </div>
   );

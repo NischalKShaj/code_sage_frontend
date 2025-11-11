@@ -15,7 +15,11 @@ export interface UserLogin {
 
 // type for the feature slide
 export interface FeatureSlide {
-  image?: string; // Optional image path
   title: string;
   description: string;
+  language: string;
+  code: string;
+  terminalOutput?: string;
+  optimizedCode?: string;
+  codeQualityScore?: number;
 }

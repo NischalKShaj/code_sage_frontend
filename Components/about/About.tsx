@@ -6,14 +6,11 @@ import Navbar from "../navbar/Navbar";
 
 const About = () => {
   return (
-    <div>
-      <div>
-        <Navbar />
+    <div className="bg-white min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex flex-1 mt-16">
+        <h1 className="text-2xl ml-[500px]">This is about Code Sage</h1>
       </div>
-      <p>
-        Hei let&apos;s get to know.... we are glad to connect and share your
-        feedback
-      </p>
     </div>
   );
 };
