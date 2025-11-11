@@ -106,17 +106,23 @@ const Login = () => {
             or sign in with
           </p>
           <div className="flex justify-center space-x-3 mt-2">
-            <button className="p-2 cursor-pointer rounded-full border hover:bg-gray-100">
+            <button
+              className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
+              aria-label="Signup with Google"
+            >
               <FaGoogle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
             </button>
-            <button className="p-2 cursor-pointer rounded-full border hover:bg-gray-100">
+            <button
+              className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
+              aria-label="Signup with Github"
+            >
               <FaGithub className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
             </button>
-            <button className="p-2 cursor-pointer rounded-full border hover:bg-gray-100">
+            <button
+              className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
+              aria-label="Signup with Microsoft"
+            >
               <FaMicrosoft className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
-            </button>
-            <button className="p-2 cursor-pointer rounded-full border hover:bg-gray-100">
-              <FaApple className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
             </button>
           </div>
         </div>

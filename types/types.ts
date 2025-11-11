@@ -12,3 +12,10 @@ export interface UserLogin {
   email: string;
   password: string;
 }
+
+// type for the feature slide
+export interface FeatureSlide {
+  image?: string; // Optional image path
+  title: string;
+  description: string;
+}
