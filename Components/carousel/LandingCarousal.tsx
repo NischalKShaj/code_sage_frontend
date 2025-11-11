@@ -1,7 +1,7 @@
 // file to create the feature carousel
 "use client";
 
-// importing the required modules
+// importing the modules
 import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { FeatureSlide } from "../../types/types";
@@ -38,7 +38,10 @@ ReferenceError: quanttiy is not defined
         "Get AI-powered suggestions to improve performance, readability, and scalability. Your code, rewritten smarter and cleaner.",
       language: "typescript",
       code: `// Original Code: Inefficient object restructuring
-const userList = [{ id: 1, data: 'A' }, { id: 2, data: 'B' }];
+const userList = [
+{ id: 1, data: 'A' }, 
+{ id: 2, data: 'B' }
+];
 const findUser = (id) => {
   for (let i = 0; i < userList.length; i++) {
     if (userList[i].id === id) {
@@ -86,7 +89,6 @@ class UserProcessor:
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Auto change every 4s
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % featureSlides.length);
@@ -94,7 +96,6 @@ class UserProcessor:
     return () => clearInterval(timer);
   }, [featureSlides.length]);
 
-  // --- Render Visuals (same as before, condensed) ---
   const renderCodeVisuals = (feature: FeatureSlide) => {
     switch (feature.title) {
       case "Error Detection":
@@ -113,7 +114,7 @@ class UserProcessor:
                 }}
               />
             </div>
-            <div className="h-[40%] bg-gray-900 p-3 text-sm text-red-400 font-mono rounded-lg overflow-auto border border-red-700">
+            <div className="h-[40%] bg-gray-900 p-3 text-xs sm:text-sm text-red-400 font-mono rounded-lg overflow-auto border border-red-700">
               <span className="text-green-500">$</span> node main.js
               <pre className="whitespace-pre-wrap">
                 {feature.terminalOutput}
@@ -171,7 +172,7 @@ class UserProcessor:
         return (
           <div className="flex flex-col h-full gap-4">
             <div className="flex justify-center items-center py-2">
-              <span className={`text-5xl font-extrabold ${color}`}>
+              <span className={`text-4xl sm:text-5xl font-extrabold ${color}`}>
                 {score}/100
               </span>
             </div>
@@ -195,7 +196,7 @@ class UserProcessor:
   };
 
   return (
-    <div className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-auto min-h-[80vh] flex items-center justify-center overflow-hidden px-4 sm:px-8 py-8">
       {featureSlides.map((feature, index) => {
         const isActive = index === currentSlide;
         const nextIndex = (currentSlide + 1) % featureSlides.length;
@@ -204,21 +205,20 @@ class UserProcessor:
         return (
           <div
             key={index}
-            className={`absolute transition-all duration-700 ease-in-out w-[80vw] max-w-6xl h-[75vh] p-8 grid md:grid-cols-2 gap-8 rounded-2xl
+            className={`absolute transition-all duration-700 ease-in-out w-full sm:w-[85vw] max-w-6xl min-h-[75vh] p-4 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 rounded-2xl
         ${
           isActive
             ? "z-30 opacity-100"
             : isNext
             ? "z-20 opacity-90"
             : "z-10 opacity-0 pointer-events-none"
-        }
-      `}
+        }`}
             style={{
               transform: isActive
                 ? "translateY(0px) scale(1)"
                 : isNext
-                ? "translateY(-30px) scale(0.95)" // slightly above & smaller
-                : "translateY(100px) scale(0.9)", // hidden slides go down
+                ? "translateY(-20px) scale(0.95)"
+                : "translateY(100px) scale(0.9)",
               filter: isNext ? "brightness(0.85) blur(0.5px)" : "none",
               transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
               boxShadow: isActive
@@ -227,13 +227,19 @@ class UserProcessor:
               background: "linear-gradient(to bottom right, #f9fafb, #ffffff)",
             }}
           >
-            {/* Left: Visual */}
-            <div className="w-full h-full">{renderCodeVisuals(feature)}</div>
+            {/* Code Section */}
+            <div className="w-full h-[50vh] md:h-full">
+              {renderCodeVisuals(feature)}
+            </div>
 
-            {/* Right: Text */}
-            <div className="flex flex-col justify-center text-black">
-              <h3 className="text-4xl font-extrabold mb-4">{feature.title}</h3>
-              <p className="text-lg opacity-80">{feature.description}</p>
+            {/* Text Section */}
+            <div className="flex flex-col justify-center text-black text-center md:text-left">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4">
+                {feature.title}
+              </h3>
+              <p className="text-base sm:text-lg opacity-80">
+                {feature.description}
+              </p>
             </div>
           </div>
         );
