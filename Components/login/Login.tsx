@@ -38,8 +38,17 @@ const Login = () => {
           err?.response?.data?.message || "Login failed — Please try again ❌",
       });
 
-      const resposne = await loginPromise;
-      router.push("/");
+      const response = await loginPromise;
+
+      const userData = response.data.user;
+      const { access_token, refresh_token } = response.data;
+
+      // localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("user", userData);
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+
+      router.push("/dashboard");
     } catch (error) {
       console.error("error from the response", error);
     }
