@@ -5,6 +5,7 @@
 import React from "react";
 import Navbar from "../navbar/Navbar";
 import Link from "next/link";
+import Footer from "../footer/Footer";
 
 const Contact = () => {
   return (
@@ -133,26 +134,7 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <section className="py-16 sm:py-20 bg-blue-100 text-black text-center px-6">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
-          Ready to Level Up Your Code?
-        </h2>
-        <p className="text-black mt-3 text-base sm:text-lg max-w-xl mx-auto">
-          Sign up now and experience the future of AI-assisted code reviews.
-        </p>
-        <Link
-          href="/signup"
-          className="inline-block mt-6 px-6 sm:px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow hover:bg-blue-200 transition text-sm sm:text-base"
-        >
-          Get Started
-        </Link>
-      </section>
-
-      {/* Footer */}
-      <footer className="text-center py-6 text-gray-500 text-xs sm:text-sm border-t border-gray-100">
-        © {new Date().getFullYear()} Code Sage — All rights reserved.
-      </footer>
+      <Footer />
     </div>
   );
 };
