@@ -116,6 +116,9 @@ const Login = () => {
           </p>
           <div className="flex justify-center space-x-3 mt-2">
             <button
+              onClick={() =>
+                (window.location.href = "http://localhost:5000/login/google")
+              }
               className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
               aria-label="Signup with Google"
             >
