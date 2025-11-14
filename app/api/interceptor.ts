@@ -27,18 +27,18 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.message) {
+    if (error.response) {
       const status = error.response.status;
 
-      if (status === 401)
-        return toast.error("Unauthorized - Please login again");
-      if (status === 500) {
-        return toast.error("Server busy");
-      } else toast.error(error.response.data.message || "Something went wrong");
+      if (status === 401) toast.error("Unauthorized - Please login again");
+      else if (status === 500)
+        toast.error("Sorry, something went wrong. Please try after some time");
+      else toast.error(error.response.data.message || "Something went wrong");
     } else {
       toast.error("Network error — Check your connection");
     }
 
+    // ❗ Important: always reject the error
     return Promise.reject(error);
   }
 );

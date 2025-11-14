@@ -23,3 +23,12 @@ export interface FeatureSlide {
   optimizedCode?: string;
   codeQualityScore?: number;
 }
+
+// type for the contact form
+export interface ContactForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  message: string;
+}
