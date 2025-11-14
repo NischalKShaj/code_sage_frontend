@@ -84,6 +84,13 @@ const Contact = () => {
         success: "Your message has been sent successfully 🎉",
       });
       await formSubmitPromise;
+      setContact({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        message: "",
+      });
     } catch (error) {
       console.error("Error while submitting", error);
     }

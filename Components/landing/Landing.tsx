@@ -1,13 +1,25 @@
 // file to create the landing page for the application
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../navbar/Navbar";
 import Link from "next/link";
 import FeatureCarousel from "../carousel/LandingCarousal";
 import Footer from "../footer/Footer";
+import { useRouter } from "next/navigation";
 
 const Landing = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token === null) {
+      router.push("/");
+    } else {
+      router.push("/dashboard");
+    }
+  }, []);
+
   return (
     <div className="bg-white min-h-screen flex flex-col">
       <Navbar />

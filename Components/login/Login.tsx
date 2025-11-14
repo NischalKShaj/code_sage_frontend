@@ -3,7 +3,7 @@
 
 // importing the required modules
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { UserLogin } from "@/types/types";
@@ -18,6 +18,14 @@ const Login = () => {
   });
 
   const router = useRouter();
+
+  // for checking the initial loading
+  useEffect(() => {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token) {
+      router.push("/dashboard");
+    }
+  }, []);
 
   // for changing the values in the input field
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +125,7 @@ const Login = () => {
           <div className="flex justify-center space-x-3 mt-2">
             <button
               onClick={() =>
-                (window.location.href = "http://localhost:3100/login/google")
+                (window.location.href = "http://localhost:4000/login/google")
               }
               className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
               aria-label="Signup with Google"
@@ -126,7 +134,7 @@ const Login = () => {
             </button>
             <button
               onClick={() =>
-                (window.location.href = "http://localhost:3100/login/github")
+                (window.location.href = "http://localhost:4000/login/github")
               }
               className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
               aria-label="Signup with Github"
