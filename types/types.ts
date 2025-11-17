@@ -32,3 +32,15 @@ export interface ContactForm {
   phoneNumber: string;
   message: string;
 }
+
+// type for the language dropdown
+export interface LanguageDropdownProps {
+  language: string;
+  setLanguage: (lang: string) => void;
+}
+
+// type for the service dropdown
+export interface ServiceDropdownProps {
+  service: string;
+  setService: (service: string) => void;
+}
