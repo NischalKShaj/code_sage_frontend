@@ -11,7 +11,7 @@ const FeatureCarousel = () => {
     {
       title: "Error Detection",
       description:
-        "Automatically detect syntax, logic, and best-practice issues across your codebase. Save hours of debugging and focus on building.",
+        "Detect syntax, logic, and best-practice issues across your codebase. Save hours of debugging and focus on building.",
       language: "javascript",
       code: `
 function calculateTotal(price, quantity) {
@@ -39,7 +39,7 @@ ReferenceError: quanttiy is not defined
       language: "typescript",
       code: `// Original Code: Inefficient object restructuring
 const userList = [
-{ id: 1, data: 'A' }, 
+{ id: 1, data: 'A' },
 { id: 2, data: 'B' }
 ];
 const findUser = (id) => {

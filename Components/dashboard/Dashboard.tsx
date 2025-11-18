@@ -7,10 +7,12 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Editor from "@monaco-editor/react";
 import { FaPlay, FaTimes } from "react-icons/fa";
+import ReactMarkdown from "react-markdown";
 import SideBar from "../sidebar/SideBar";
 import LanguageDropdown from "../dropdown/LanguageDropDown";
 import ServiceDropDown from "../dropdown/ServiceDropDown";
 import { LANGUAGE_MAP } from "../../utils/language";
+import api from "../../app/api/interceptor";
 
 const Dashboard = () => {
   // const router = useRouter();
@@ -45,9 +47,36 @@ const Dashboard = () => {
     }
   };
 
-  const handleRun = () => {
+  const isDisabled = !language || !service || !prompt;
+
+  const handleRun = async () => {
     // Later: call your API here
     setOutput(`Running ${service} on the provided code...`);
+
+    const payload = {
+      language,
+      service,
+      prompt,
+      code,
+    };
+
+    if (
+      payload.prompt === "" ||
+      payload.service === "" ||
+      payload.language === ""
+    ) {
+      toast.error("Please enter all the fields");
+    }
+
+    const runPromise = api.post("/openai/run", payload);
+
+    toast.promise(runPromise, {
+      loading: "Processing your request...",
+    });
+
+    const response = await runPromise;
+
+    setOutput(response.data.output);
   };
 
   return (
@@ -75,7 +104,15 @@ const Dashboard = () => {
 
           <button
             onClick={handleRun}
-            className={`flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 transition transform hover:scale-[1.02] cursor-pointer`}
+            disabled={isDisabled}
+            className={`flex items-center gap-2 px-6 py-2 bg-indigo-600
+              text-white font-bold rounded-lg shadow-lg transition transform
+              ${
+                isDisabled
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer hover:bg-indigo-700bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.02] cursor-pointer"
+              }
+              `}
           >
             <FaPlay /> {getButtonLabel(service)}
           </button>
@@ -124,13 +161,11 @@ const Dashboard = () => {
             </h2>
 
             <div className="p-4 flex-1 overflow-y-auto max-h-[55vh] custom-scrollbar">
-              <div className="whitespace-pre-wrap break-words text-gray-300 font-mono text-sm ">
-                {output || (
-                  <p className="text-gray-500 italic">
-                    The AI&apos;s generated review, fixed code, or explanation
-                    will appear here after you click &apos;Run AI&apos;.
-                  </p>
-                )}
+              <div className="prose prose-invert max-w-none text-gray-300">
+                <ReactMarkdown>
+                  {output ||
+                    "_The AI’s generated review, fixed code, or explanation will appear here after you click 'Run AI'._"}
+                </ReactMarkdown>
               </div>
             </div>
           </div>

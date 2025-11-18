@@ -8,6 +8,8 @@ export const LANGUAGE_MAP: Record<string, string> = {
   Python3: "python",
   "C++": "cpp",
   "C#": "csharp",
+  JSX: "javascript",
+  TSX: "typescript",
   C: "c",
   Java: "java",
   Go: "go",

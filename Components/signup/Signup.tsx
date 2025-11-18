@@ -5,7 +5,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import Image from "next/image";
-import { FaGoogle, FaMicrosoft, FaApple, FaGithub } from "react-icons/fa";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 import { UserSignup } from "@/types/types";
 import api from "@/app/api/interceptor";
 import toast from "react-hot-toast";
@@ -116,22 +116,22 @@ const Signup = () => {
           </p>
           <div className="flex justify-center space-x-3 mt-2">
             <button
+              onClick={() =>
+                (window.location.href = "http://localhost:4000/login/google")
+              }
               className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
               aria-label="Signup with Google"
             >
               <FaGoogle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
             </button>
             <button
-              className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
+              onClick={() =>
+                (window.location.href = "http://localhost:4000/login/github")
+              }
+              className="p-2 cursor-pointer rounded-full border hover:bg-gray-100 "
               aria-label="Signup with Github"
             >
               <FaGithub className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-            </button>
-            <button
-              className="p-2 cursor-pointer rounded-full border hover:bg-gray-100"
-              aria-label="Signup with Microsoft"
-            >
-              <FaMicrosoft className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
             </button>
           </div>
         </div>

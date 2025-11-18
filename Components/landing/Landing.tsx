@@ -31,9 +31,9 @@ const Landing = () => {
           <span className="text-blue-500">AI Precision</span>
         </h1>
         <p className="text-gray-600 mt-4 text-lg max-w-2xl">
-          Code Reviewer helps developers write cleaner, faster, and smarter code
-          by detecting errors, optimizing performance, and evaluating overall
-          code quality — instantly.
+          Code Sage helps developers write cleaner, faster, and smarter code by
+          detecting errors, optimizing performance, and evaluating overall code
+          quality — instantly.
         </p>
         <div className="mt-8 flex space-x-4">
           <Link
@@ -55,7 +55,7 @@ const Landing = () => {
       <section className="py-8 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto text-center mb-3">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            What Code Reviewer Does
+            What Code Sage Does
           </h2>
           <p className="text-gray-500 mt-3 text-lg">
             Transform the way you review and optimize your code — faster,

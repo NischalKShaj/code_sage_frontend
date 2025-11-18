@@ -67,7 +67,7 @@ const ServiceDropDown: React.FC<ServiceDropdownProps> = ({
                 setService(ser);
                 setOpen(false);
               }}
-              className={`text-left px-1 py-1 rounded transition cursor-pointer whitespace-nowrap
+              className={`text-left px-1 py-1 rounded transition cursor-pointer hover:text-indigo-400 whitespace-nowrap
                 overflow-hidden text-ellipsis
                           ${
                             service === ser
