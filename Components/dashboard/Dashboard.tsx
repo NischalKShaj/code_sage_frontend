@@ -28,6 +28,7 @@ const Dashboard = () => {
   const [service, setService] = useState("");
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // function for changing the button name asper the service
   const getButtonLabel = (service: string) => {
@@ -51,6 +52,7 @@ const Dashboard = () => {
 
   const handleRun = async () => {
     // Later: call your API here
+    setLoading(true);
     setOutput(`Running ${service} on the provided code...`);
 
     const payload = {
@@ -68,15 +70,18 @@ const Dashboard = () => {
       toast.error("Please enter all the fields");
     }
 
-    const runPromise = api.post("/openai/run", payload);
+    try {
+      const runPromise = api.post("/openai/run", payload);
 
-    toast.promise(runPromise, {
-      loading: "Processing your request...",
-    });
+      const response = await runPromise;
 
-    const response = await runPromise;
-
-    setOutput(response.data.output);
+      setOutput(response.data.output);
+    } catch (error) {
+      setOutput("Server is being overloaded. Please try again later.");
+      console.error("error", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,17 +109,45 @@ const Dashboard = () => {
 
           <button
             onClick={handleRun}
-            disabled={isDisabled}
+            disabled={isDisabled || loading}
             className={`flex items-center gap-2 px-6 py-2 bg-indigo-600
               text-white font-bold rounded-lg shadow-lg transition transform
               ${
-                isDisabled
+                isDisabled || loading
                   ? "cursor-not-allowed"
                   : "cursor-pointer hover:bg-indigo-700bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.02] cursor-pointer"
               }
               `}
           >
-            <FaPlay /> {getButtonLabel(service)}
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
+                  ></path>
+                </svg>
+                Running...
+              </span>
+            ) : (
+              <>
+                <FaPlay /> {getButtonLabel(service)}
+              </>
+            )}
           </button>
         </div>
 
@@ -161,12 +194,26 @@ const Dashboard = () => {
             </h2>
 
             <div className="p-4 flex-1 overflow-y-auto max-h-[55vh] custom-scrollbar">
-              <div className="prose prose-invert max-w-none text-gray-300">
-                <ReactMarkdown>
-                  {output ||
-                    "_The AI’s generated review, fixed code, or explanation will appear here after you click 'Run AI'._"}
-                </ReactMarkdown>
-              </div>
+              {loading ? (
+                <div className="space-y-3 animate-pulse">
+                  <div className="h-4 bg-gray-700/50 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-full"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-[90%]"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-[60%]"></div>
+
+                  <div className="mt-4 h-4 bg-gray-700/50 rounded w-full"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-[80%]"></div>
+                  <div className="h-4 bg-gray-700/50 rounded w-[40%]"></div>
+                </div>
+              ) : (
+                <div className="prose prose-invert max-w-none text-gray-300">
+                  <ReactMarkdown>
+                    {output ||
+                      "_The AI’s generated review, fixed code, or explanation will appear here after you click 'Run AI'._"}
+                  </ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
         </div>
