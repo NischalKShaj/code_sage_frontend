@@ -54,12 +54,15 @@ const Dashboard = () => {
     // Later: call your API here
     setLoading(true);
     setOutput(`Running ${service} on the provided code...`);
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
 
     const payload = {
       language,
       service,
       prompt,
       code,
+      userId: user.id,
     };
 
     if (

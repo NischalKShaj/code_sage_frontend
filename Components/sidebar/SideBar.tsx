@@ -2,7 +2,7 @@
 "use client";
 
 // importing the required modules
-import React from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   FaUserCircle,
@@ -11,13 +11,49 @@ import {
   FaTrash,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import api from "@/app/api/interceptor";
 
 const SideBar = () => {
+  const router = useRouter();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [user, setUser] = useState<any>(null);
+  const [history, setHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
+    }
+  }, []);
+
+  // Fetch history after user is loaded
+  useEffect(() => {
+    if (!user?.id) return; // prevent undefined fetch
+    fetchHistory(user.id);
+  }, [user]);
+
+  // function for feting the chat history for the user
+  const fetchHistory = async (id: string) => {
+    try {
+      console.log();
+      const response = await api.get(`/dashboard/history/${id}`);
+
+      if (response.status == 200) {
+        const titles = response.data.title;
+        setHistory(titles);
+      }
+    } catch (error) {
+      console.error("error from the api", error);
+    }
+  };
+
   const handleLogout = () => {
-    // localStorage.removeItem("access_token");
-    // localStorage.removeItem("refresh_token");
-    // localStorage.removeItem("user");
-    // router.push("/");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user");
+    router.push("/");
     toast.success("Logged out successfully");
   };
   return (
@@ -26,9 +62,11 @@ const SideBar = () => {
       <div className="flex flex-col items-start">
         <div className="flex flex-row items-center space-x-3">
           <FaUserCircle className="w-4 h-4 text-gray-400" />
-          <h3 className="text-lg font-semibold text-gray-100">Username</h3>
+          <h3 className="text-lg font-semibold text-gray-100">
+            {user?.username}
+          </h3>
         </div>
-        <p className="text-sm text-gray-400">email@example.com</p>
+        <p className="text-sm text-gray-400">{user?.email}</p>
       </div>
 
       {/* Navigation */}
@@ -38,7 +76,22 @@ const SideBar = () => {
           <span className="font-medium">History</span>
         </div>
         <div className="flex flex-col max-h-120 overflow-y-auto pr-2 custom-scrollbar">
-          <p>show the history here</p>
+          {history.length === 0 ? (
+            <p className="text-gray-500 text-sm ml-3">No history yet</p>
+          ) : (
+            history.map((item, idx) => (
+              <div
+                key={idx}
+                className="cursor-pointer px-4 py-2 mb-1 rounded hover:bg-gray-700 transition flex items-center gap-2"
+              >
+                {/* Bullet Dot */}
+                <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+
+                {/* Title */}
+                <span className="text-gray-200 text-sm">{item}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
