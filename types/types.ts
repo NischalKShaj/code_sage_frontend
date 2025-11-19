@@ -50,3 +50,15 @@ export interface HistoryPart {
   id: string;
   title: string;
 }
+
+// interface for the trash section
+export interface TrashSection {
+  id: string;
+  historyId: string;
+  title: string;
+}
+
+// for trash modal interface
+export interface TrashModalProps {
+  setOpen: (value: boolean) => void;
+}

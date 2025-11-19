@@ -20,18 +20,15 @@ import ServiceDropDown from "../dropdown/ServiceDropDown";
 import { LANGUAGE_MAP } from "../../utils/language";
 import api from "../../app/api/interceptor";
 import { HistoryPart } from "../../types/types";
+import TrashModal from "../modal/TrashModal";
 
 const Dashboard = () => {
-  // const router = useRouter();
-  // useEffect(() => {
-  //   const access_token = localStorage.getItem("access_token");
-  //   if (!access_token) {
-  //     router.push("/");
-  //   }
-  //   router.push("/dashboard");
-  // }, []);
-
   const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) router.push("/");
+  }, []);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const [history, setHistory] = useState<HistoryPart[]>([]);
@@ -50,6 +47,8 @@ const Dashboard = () => {
     x: 0,
     y: 0,
   });
+  const [openTrashModal, setOpenTrashModal] = useState(false);
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   useEffect(() => {
     const close = (e: MouseEvent) => {
@@ -82,18 +81,19 @@ const Dashboard = () => {
 
   // Fetch history after user is loaded
   useEffect(() => {
-    if (!user?.id) return; // prevent undefined fetch
+    if (!user?.id) return;
     fetchHistory(user.id);
-  }, [user]);
+  }, [user, historyRefreshKey]);
 
   // function for feting the chat history for the user
   const fetchHistory = async (id: string) => {
     try {
-      console.log();
+      console.log("came here");
       const response = await api.get(`/dashboard/history/${id}`);
 
       if (response.status == 200) {
         const titles = response.data.title;
+        console.log("data", titles);
         setHistory(titles);
       }
     } catch (error) {
@@ -161,14 +161,20 @@ const Dashboard = () => {
 
       setOutput(response.data.output);
 
-      // for updating the history
-      await fetchHistory(user.id);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      setHistoryRefreshKey((prev) => prev + 1);
     } catch (error) {
       setOutput("Server is being overloaded. Please try again later.");
       console.error("error", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // for opening the modal for the trash
+  const handleTrashModal = () => {
+    setOpenTrashModal(!openTrashModal);
   };
 
   // for deleting the history
@@ -292,7 +298,10 @@ const Dashboard = () => {
             <span className="font-medium">Settings</span>
           </button>
 
-          <button className="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition">
+          <button
+            onClick={handleTrashModal}
+            className="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
             <FaTrash className="w-5 h-5 text-gray-400" />
             <span className="font-medium">Trash</span>
           </button>
@@ -441,6 +450,7 @@ const Dashboard = () => {
               )}
             </div>
           </div>
+          {openTrashModal && <TrashModal setOpen={setOpenTrashModal} />}
         </div>
       </div>
     </div>
