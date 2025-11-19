@@ -44,3 +44,9 @@ export interface ServiceDropdownProps {
   service: string;
   setService: (service: string) => void;
 }
+
+// interface for the history part
+export interface HistoryPart {
+  id: string;
+  title: string;
+}
