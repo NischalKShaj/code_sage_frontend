@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ProfileModal from "./ProfileModal";
 
-const SettingsModal = ({ setOpenSettings }: SettingsModalProps) => {
+const SettingsModal = ({ setOpenSettings, setUser }: SettingsModalProps) => {
   const [openProfile, setOpenProfile] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
@@ -82,7 +82,9 @@ const SettingsModal = ({ setOpenSettings }: SettingsModalProps) => {
           </div>
         </div>
       </div>
-      {openProfile && <ProfileModal openProfile={setOpenProfile} />}
+      {openProfile && (
+        <ProfileModal openProfile={setOpenProfile} setUser={setUser} />
+      )}
     </div>
   );
 };

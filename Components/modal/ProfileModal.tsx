@@ -2,11 +2,14 @@
 "use client";
 
 // importing the required modules
+import api from "@/app/api/interceptor";
 import { ProfileModalProps } from "@/types/types";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-const ProfileModal = ({ openProfile }: ProfileModalProps) => {
+const ProfileModal = ({ openProfile, setUser }: ProfileModalProps) => {
   const [userData, setUserData] = useState({
+    id: "",
     username: "",
     email: "",
   });
@@ -16,6 +19,7 @@ const ProfileModal = ({ openProfile }: ProfileModalProps) => {
     if (stored) {
       const parsed = JSON.parse(stored);
       setUserData({
+        id: parsed.id || "",
         username: parsed.username || "",
         email: parsed.email || "",
       });
@@ -26,11 +30,30 @@ const ProfileModal = ({ openProfile }: ProfileModalProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
+
   // for saving the updated name and email
-  const handleSave = () => {
-    // You can call API here if you want to save in DB
-    localStorage.setItem("user", JSON.stringify(userData));
-    openProfile(false);
+  const handleSave = async () => {
+    try {
+      const updated = { ...userData };
+      const profileUpdatePromise = api.post(
+        `/dashboard/edit-profile/${userData.id}`,
+        userData
+      );
+
+      toast.promise(profileUpdatePromise, {
+        loading: "Updating profile....",
+        success: "Profile updated 🎉",
+      });
+
+      const response = await profileUpdatePromise;
+      if (response.status === 202) {
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(updated);
+        openProfile(false);
+      }
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   return (

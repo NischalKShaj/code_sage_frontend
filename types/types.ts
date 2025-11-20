@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 //  file to setup the types for the application
 
 // type for user signup
@@ -66,9 +67,11 @@ export interface TrashModalProps {
 // for Settings modal interface
 export interface SettingsModalProps {
   setOpenSettings: (value: boolean) => void;
+  setUser: (value: any) => void;
 }
 
 // for profile modal interface
 export interface ProfileModalProps {
   openProfile: (value: boolean) => void;
+  setUser: (value: any) => void;
 }

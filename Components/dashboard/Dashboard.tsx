@@ -463,7 +463,10 @@ const Dashboard = () => {
           </div>
           {openTrashModal && <TrashModal setOpen={setOpenTrashModal} />}
           {openSettingsModal && (
-            <SettingsModal setOpenSettings={setOpenSettingsModal} />
+            <SettingsModal
+              setOpenSettings={setOpenSettingsModal}
+              setUser={setUser}
+            />
           )}
         </div>
       </div>
