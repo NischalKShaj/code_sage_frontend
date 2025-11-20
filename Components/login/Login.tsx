@@ -52,9 +52,9 @@ const Login = () => {
       const { access_token, refresh_token } = response.data;
 
       localStorage.setItem("user", JSON.stringify(userData));
-      // localStorage.setItem("user", userData);
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("theme", "dark");
 
       router.push("/dashboard");
     } catch (error) {

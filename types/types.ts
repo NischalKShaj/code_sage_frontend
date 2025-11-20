@@ -62,3 +62,13 @@ export interface TrashSection {
 export interface TrashModalProps {
   setOpen: (value: boolean) => void;
 }
+
+// for Settings modal interface
+export interface SettingsModalProps {
+  setOpenSettings: (value: boolean) => void;
+}
+
+// for profile modal interface
+export interface ProfileModalProps {
+  openProfile: (value: boolean) => void;
+}

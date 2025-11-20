@@ -21,6 +21,7 @@ import { LANGUAGE_MAP } from "../../utils/language";
 import api from "../../app/api/interceptor";
 import { HistoryPart } from "../../types/types";
 import TrashModal from "../modal/TrashModal";
+import SettingsModal from "../modal/SettingsModal";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -48,6 +49,7 @@ const Dashboard = () => {
     y: 0,
   });
   const [openTrashModal, setOpenTrashModal] = useState(false);
+  const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   useEffect(() => {
@@ -106,6 +108,7 @@ const Dashboard = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
+    localStorage.removeItem("theme");
     router.push("/");
     toast.success("Logged out successfully");
   };
@@ -175,6 +178,11 @@ const Dashboard = () => {
   // for opening the modal for the trash
   const handleTrashModal = () => {
     setOpenTrashModal(!openTrashModal);
+  };
+
+  // for opening the modal for the settings
+  const handleSettingsModal = () => {
+    setOpenSettingsModal(!openSettingsModal);
   };
 
   // for deleting the history
@@ -293,7 +301,10 @@ const Dashboard = () => {
         {/* Settings and Trash */}
         <div className="flex flex-col space-y-3 text-gray-300">
           <hr />
-          <button className="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition">
+          <button
+            onClick={handleSettingsModal}
+            className="cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
             <FaCog className="w-5 h-5 text-gray-400" />
             <span className="font-medium">Settings</span>
           </button>
@@ -349,7 +360,7 @@ const Dashboard = () => {
               ${
                 isDisabled || loading
                   ? "cursor-not-allowed"
-                  : "cursor-pointer hover:bg-indigo-700bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.02] cursor-pointer"
+                  : "hover:bg-indigo-700bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.02] cursor-pointer"
               }
               `}
           >
@@ -451,6 +462,9 @@ const Dashboard = () => {
             </div>
           </div>
           {openTrashModal && <TrashModal setOpen={setOpenTrashModal} />}
+          {openSettingsModal && (
+            <SettingsModal setOpenSettings={setOpenSettingsModal} />
+          )}
         </div>
       </div>
     </div>

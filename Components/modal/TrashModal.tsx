@@ -2,9 +2,9 @@
 // file to create a trash modal
 "use client";
 
+// importing the required modules
 import api from "@/app/api/interceptor";
 import { TrashModalProps, TrashSection } from "@/types/types";
-// importing the required modules
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -77,7 +77,7 @@ const TrashModal = ({ setOpen }: TrashModalProps) => {
 
           <button
             onClick={() => setOpen(false)}
-            className="text-gray-400 hover:text-white text-lg cursor-pointer"
+            className="text-gray-400 text-lg cursor-pointer"
           >
             ✖
           </button>
