@@ -51,6 +51,8 @@ const Dashboard = () => {
   const [openTrashModal, setOpenTrashModal] = useState(false);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
+  const [title, setTitle] = useState("");
+  const [isEdit, setIsEdit] = useState("");
 
   useEffect(() => {
     const close = (e: MouseEvent) => {
@@ -206,6 +208,18 @@ const Dashboard = () => {
     setHistoryRefreshKey((prev) => prev + 1);
   };
 
+  // for editing the title for the history
+  const handleEditTitle = async (id: string) => {
+    try {
+      const response = await api.put(`/dashboard/history/${id}`, { title });
+      if (response.status === 202) {
+        history.map((item) => item.id === id && (item.title = title));
+      }
+    } catch (error) {
+      console.error("Error in the api", error);
+    }
+  };
+
   return (
     <div className="flex max-h-screen  bg-gray-900 pb-4">
       <div
@@ -242,9 +256,38 @@ const Dashboard = () => {
                     {/* Left Section */}
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                      <span className="text-gray-200 text-sm">
-                        {item.title}
-                      </span>
+                      {isEdit === item.id ? (
+                        <div>
+                          <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                handleEditTitle(isEdit);
+                                setIsEdit("");
+                                refreshHistory();
+                              }
+                              if (e.key === "Escape") {
+                                setIsEdit("");
+                                setTitle("");
+                              }
+                            }}
+                            onBlur={() => {
+                              if (title.trim() !== "") {
+                                handleEditTitle(isEdit);
+                              }
+                              setIsEdit("");
+                            }}
+                            className="bg-gray-800 border border-gray-700 rounded-md shadow-lg w-32 z-[9999] text-gray-200 text-sm px-3 h-8"
+                            placeholder="Enter title"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-gray-200 text-sm">
+                          {item.title}
+                        </span>
+                      )}
                     </div>
 
                     {/* 3-Dot Menu */}
@@ -274,8 +317,9 @@ const Dashboard = () => {
                       >
                         <button
                           onClick={() => {
-                            console.log("Edit", item);
                             setDropdown({ selectedId: null, x: 0, y: 0 });
+                            setIsEdit(item.id);
+                            setTitle(item.title);
                           }}
                           className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-700"
                         >
@@ -284,7 +328,6 @@ const Dashboard = () => {
 
                         <button
                           onClick={() => {
-                            console.log("Delete", item);
                             setDropdown({ selectedId: null, x: 0, y: 0 });
                             handleDelete(item.id);
                           }}
