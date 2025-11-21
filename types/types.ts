@@ -62,6 +62,7 @@ export interface TrashSection {
 // for trash modal interface
 export interface TrashModalProps {
   setOpen: (value: boolean) => void;
+  refreshHistory: () => void;
 }
 
 // for Settings modal interface

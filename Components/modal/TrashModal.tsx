@@ -8,7 +8,7 @@ import { TrashModalProps, TrashSection } from "@/types/types";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const TrashModal = ({ setOpen }: TrashModalProps) => {
+const TrashModal = ({ setOpen, refreshHistory }: TrashModalProps) => {
   const [user, setUser] = useState<any>(null);
   const [trash, setTrash] = useState<TrashSection[]>([]);
   const [dropdown, setDropdown] = useState<{
@@ -62,6 +62,32 @@ const TrashModal = ({ setOpen }: TrashModalProps) => {
       setTrash((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("error from the api", error);
+    }
+  };
+
+  // for restoring the trash
+  const handleRestore = async (id: string) => {
+    try {
+      const response = await api.put(`/dashboard/restore/${id}`);
+      if (response.status === 202) {
+        toast.success("History restored successfully");
+        setTrash((prev) => prev.filter((item) => item.id !== id));
+        refreshHistory();
+      }
+    } catch (error) {
+      console.error("Error in the api", error);
+    }
+  };
+
+  // for removing the data from the trash permanently
+  const handlePermanentDelete = async (id: string) => {
+    try {
+      const response = await api.delete(`/dashboard/trash/${id}`);
+      if (response.status === 202) {
+        setTrash((prev) => prev.filter((item) => item.id !== id));
+      }
+    } catch (error) {
+      console.error("error from deleting", error);
     }
   };
 
@@ -128,7 +154,7 @@ const TrashModal = ({ setOpen }: TrashModalProps) => {
                       onClick={() => {
                         console.log("Restore", item);
                         setDropdown({ selectedId: null, x: 0, y: 0 });
-                        // restoreHistory(item.id)
+                        handleRestore(item.id);
                       }}
                       className="w-full text-left px-3 py-2 text-sm text-green-400 hover:bg-gray-700"
                     >
@@ -139,7 +165,7 @@ const TrashModal = ({ setOpen }: TrashModalProps) => {
                       onClick={() => {
                         console.log("Delete", item);
                         setDropdown({ selectedId: null, x: 0, y: 0 });
-                        handleDelete(item.id);
+                        handlePermanentDelete(item.id);
                       }}
                       className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-gray-700"
                     >

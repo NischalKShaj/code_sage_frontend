@@ -90,12 +90,10 @@ const Dashboard = () => {
   // function for feting the chat history for the user
   const fetchHistory = async (id: string) => {
     try {
-      console.log("came here");
       const response = await api.get(`/dashboard/history/${id}`);
 
       if (response.status == 200) {
         const titles = response.data.title;
-        console.log("data", titles);
         setHistory(titles);
       }
     } catch (error) {
@@ -201,6 +199,11 @@ const Dashboard = () => {
     } catch (error) {
       console.error("error from the api", error);
     }
+  };
+
+  // for restoring the trash
+  const refreshHistory = () => {
+    setHistoryRefreshKey((prev) => prev + 1);
   };
 
   return (
@@ -461,7 +464,12 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-          {openTrashModal && <TrashModal setOpen={setOpenTrashModal} />}
+          {openTrashModal && (
+            <TrashModal
+              setOpen={setOpenTrashModal}
+              refreshHistory={refreshHistory}
+            />
+          )}
           {openSettingsModal && (
             <SettingsModal
               setOpenSettings={setOpenSettingsModal}
